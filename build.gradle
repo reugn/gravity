@@ -5,12 +5,25 @@ plugins {
 }
 
 group 'reug'
-version '0.0.1'
+version '0.2.0'
 
 sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+}
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+bintray {
+    user = properties.getProperty("user")
+    key = properties.getProperty("password")
+    configurations = ['archives']
+    pkg {
+        repo = 'maven'
+        name = 'gravity'
+    }
 }
 
 dependencies {
