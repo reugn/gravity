@@ -1,4 +1,5 @@
 ## Gravity
+[ ![Download](https://api.bintray.com/packages/reug/maven/gravity/images/download.svg) ](https://bintray.com/reug/maven/gravity/_latestVersion)
 
 Gravity is a Java data matching library which provides reach multi-pattern search interface as well as simple string match.
 It can iterate over InputStream without loading the whole target into memory.
@@ -10,6 +11,10 @@ Wraps [Apache Tika](https://github.com/apache/tika) for detecting and extracting
 Add  Maven/Gradle repository
 ```
 https://dl.bintray.com/reug/maven
+```
+Gradle dependency
+```
+compile(group: 'reug', name: 'gravity', version: '<version>')
 ```
 Usage example
 ```java
