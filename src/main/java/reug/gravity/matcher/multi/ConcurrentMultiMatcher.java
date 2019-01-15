@@ -1,0 +1,70 @@
+package reug.gravity.matcher.multi;
+
+import com.google.common.base.Preconditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import reug.gravity.matcher.MatcherFactory;
+import reug.gravity.model.MatchResult;
+import reug.gravity.model.Pattern;
+import reug.gravity.traits.SlidingTargetShift;
+import reug.gravity.util.SlidingReader;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
+public class ConcurrentMultiMatcher implements MultiMatcher {
+
+    private MatcherFactory f;
+    private int windowMagnitude;
+
+    private static final Logger logger = LoggerFactory.getLogger(ConcurrentMultiMatcher.class);
+
+    public ConcurrentMultiMatcher(MatcherFactory f, int windowMagnitude) {
+        this.f = f;
+        this.windowMagnitude = windowMagnitude;
+    }
+
+    @Override
+    public CompletableFuture<Optional<Integer>> match(List<Pattern> patterns, String target) {
+        return CompletableFuture.supplyAsync(() -> invokeAll(patterns, target, SlidingTargetShift.identity).stream()
+                .map(r -> r.getPattern().calculateScore(r.getAmount()))
+                .reduce(Integer::sum));
+    }
+
+    private List<MatchResult> invokeAll(List<Pattern> patterns, String target, SlidingTargetShift s) {
+        return patterns.stream().map(p -> toCompletableFuture(p, s.shiftTarget(p, target)))
+                .map(CompletableFuture::join)
+                .collect(Collectors.toList());
+    }
+
+    private CompletableFuture<MatchResult> toCompletableFuture(Pattern p, String target) {
+        return CompletableFuture.supplyAsync(() -> new MatchResult(p, f.create().match(p, target)));
+    }
+
+    @Override
+    public CompletableFuture<Optional<Integer>> match(List<Pattern> patterns, InputStream is) {
+        Preconditions.checkArgument(!patterns.isEmpty(), "match patterns can't be empty list");
+        return CompletableFuture.supplyAsync(() -> {
+                    int w_size = patterns.stream().map(p -> p.getSearch().length()).max(Integer::compareTo).get();
+                    List<List<MatchResult>> res = new ArrayList<>();
+                    try (SlidingReader reader = new SlidingReader(is, w_size * windowMagnitude)) {
+                        Optional<String> window = reader.read();
+                        while (window != Optional.<String>empty()) {
+                            res.add(invokeAll(patterns, window.get(), SlidingTargetShift.doShift));
+                            window = reader.read();
+                        }
+                    } catch (IOException e) {
+                        logger.error("Exception on read from input stream", e);
+                    }
+                    return res;
+                }
+        ).thenApplyAsync(res -> res.stream().flatMap(List::stream)
+                .collect(Collectors.groupingBy(MatchResult::getPattern, Collectors.summingInt(MatchResult::getAmount)))
+                .entrySet().stream().map(e -> e.getKey().calculateScore(e.getValue())).reduce(Integer::sum));
+    }
+}
