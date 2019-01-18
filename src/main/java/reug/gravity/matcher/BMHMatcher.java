@@ -1,9 +1,17 @@
 package reug.gravity.matcher;
 
+import reug.gravity.util.LRUCache;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class BMHMatcher extends BaseMatcher {
+
+    private static final int maxLRUEntries = 8192;
+    private static Map<String, SkipTable> cache = Collections.synchronizedMap(
+            new LRUCache<>(maxLRUEntries)
+    );
 
     private static class SkipTable {
         private Map<Character, Integer> skip_table = new HashMap<>();
@@ -30,9 +38,13 @@ public class BMHMatcher extends BaseMatcher {
         }
     }
 
+    private SkipTable getSkipTable(String pattern) {
+        return cache.computeIfAbsent(pattern, SkipTable::new);
+    }
+
     @Override
     public int doMatch(String pattern, String target) {
-        SkipTable st = new SkipTable(pattern);
+        SkipTable st = getSkipTable(pattern);
         int i = pattern.length() - 1;
         int len = i;
         int rt = NOT_FOUND;

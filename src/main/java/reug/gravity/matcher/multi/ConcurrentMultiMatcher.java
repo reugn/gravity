@@ -15,25 +15,35 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
 public class ConcurrentMultiMatcher implements MultiMatcher {
 
     private MatcherFactory f;
     private int windowMagnitude;
+    private Executor ex;
 
     private static final Logger logger = LoggerFactory.getLogger(ConcurrentMultiMatcher.class);
 
     public ConcurrentMultiMatcher(MatcherFactory f, int windowMagnitude) {
         this.f = f;
         this.windowMagnitude = windowMagnitude;
+        this.ex = ForkJoinPool.commonPool();
+    }
+
+    public ConcurrentMultiMatcher(MatcherFactory f, int windowMagnitude, Executor ex) {
+        this.f = f;
+        this.windowMagnitude = windowMagnitude;
+        this.ex = ex;
     }
 
     @Override
     public CompletableFuture<Optional<Integer>> match(List<Pattern> patterns, String target) {
         return CompletableFuture.supplyAsync(() -> invokeAll(patterns, target, SlidingTargetShift.identity).stream()
                 .map(r -> r.getPattern().calculateScore(r.getAmount()))
-                .reduce(Integer::sum));
+                .reduce(Integer::sum), ex);
     }
 
     private List<MatchResult> invokeAll(List<Pattern> patterns, String target, SlidingTargetShift s) {
@@ -43,7 +53,7 @@ public class ConcurrentMultiMatcher implements MultiMatcher {
     }
 
     private CompletableFuture<MatchResult> toCompletableFuture(Pattern p, String target) {
-        return CompletableFuture.supplyAsync(() -> new MatchResult(p, f.create().match(p, target)));
+        return CompletableFuture.supplyAsync(() -> new MatchResult(p, f.create().match(p, target)), ex);
     }
 
     @Override
@@ -62,9 +72,9 @@ public class ConcurrentMultiMatcher implements MultiMatcher {
                         logger.error("Exception on read from input stream", e);
                     }
                     return res;
-                }
+                }, ex
         ).thenApplyAsync(res -> res.stream().flatMap(List::stream)
                 .collect(Collectors.groupingBy(MatchResult::getPattern, Collectors.summingInt(MatchResult::getAmount)))
-                .entrySet().stream().map(e -> e.getKey().calculateScore(e.getValue())).reduce(Integer::sum));
+                .entrySet().stream().map(e -> e.getKey().calculateScore(e.getValue())).reduce(Integer::sum), ex);
     }
 }

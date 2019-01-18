@@ -9,6 +9,7 @@ import reug.gravity.matcher.Matcher;
 import reug.gravity.matcher.multi.ConcurrentMultiMatcher;
 import reug.gravity.matcher.multi.MultiMatcher;
 import reug.gravity.model.Pattern;
+import reug.gravity.util.Patterns;
 import reug.gravity.util.Utils;
 
 import java.io.InputStream;
@@ -65,5 +66,16 @@ public class FunctionalityTest {
         MultiMatcher m = new ConcurrentMultiMatcher(ContainsMatcher::new, 32);
         int res = m.match(patterns, extracted).get().get();
         assertEquals(15, res);
+    }
+
+    @Test
+    public void multiMatchFromCSV() throws Exception {
+        InputStream is = Utils.readResource("/apache-license-2.0.txt");
+        InputStream patterns_is = Utils.readResource("/patterns.csv");
+        List<Pattern> patterns = Patterns.fromCSV(patterns_is);
+
+        MultiMatcher m = new ConcurrentMultiMatcher(ContainsMatcher::new, 32);
+        int res = m.match(patterns, is).get().get();
+        assertEquals(18, res);
     }
 }

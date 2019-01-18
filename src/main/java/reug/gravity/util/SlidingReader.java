@@ -1,5 +1,6 @@
 package reug.gravity.util;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -29,7 +30,7 @@ public class SlidingReader implements AutoCloseable {
     private String window;
 
     public SlidingReader(InputStream is, int sliding_interval) {
-        _is = is;
+        _is = new BufferedInputStream(is);
         slidingInterval = sliding_interval;
         cbuf = new byte[sliding_interval];
         window = String.join("", Collections.nCopies(sliding_interval, " "));
@@ -47,7 +48,7 @@ public class SlidingReader implements AutoCloseable {
      * @return optional of sliding window or <code>Optional.empty()<code/> on end of stream.
      * @throws IOException of underlying InputStream
      */
-    public Optional<String> read() throws IOException {
+    public synchronized Optional<String> read() throws IOException {
         int read = _is.read(cbuf, 0, slidingInterval);
         String append;
         if (read == -1) {
