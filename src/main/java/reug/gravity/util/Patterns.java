@@ -2,11 +2,14 @@ package reug.gravity.util;
 
 import reug.gravity.model.Pattern;
 
-import java.io.*;
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Patterns {
 
@@ -22,18 +25,10 @@ public class Patterns {
     }
 
     public static List<Pattern> fromCSV(InputStream is, Function<String, String> filter) {
-        List<Pattern> res = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-            String line = reader.readLine();
-            while (line != null) {
-                List<String> tokens = Arrays.asList(line.split(","));
-                res.add(toPattern(tokens, filter));
-                line = reader.readLine();
-            }
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Failed to read from csv", e);
-        }
-        return res;
+        return new BufferedReader(new InputStreamReader(is)).lines().map(line -> {
+            List<String> tokens = Arrays.asList(line.split(","));
+            return toPattern(tokens, filter);
+        }).collect(Collectors.toList());
     }
 
     public static List<Pattern> fromCSV(String in, Function<String, String> filter) {
