@@ -19,7 +19,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
-public class ConcurrentMultiMatcher implements MultiMatcher {
+public class ConcurrentMultiMatcher implements CasualMatcher {
 
     private MatcherFactory f;
     private int windowMagnitude;
