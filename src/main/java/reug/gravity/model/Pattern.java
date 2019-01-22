@@ -45,6 +45,10 @@ public class Pattern {
         return max_spot;
     }
 
+    public Function<String, String> getFilter() {
+        return filter;
+    }
+
     public int calculateScore(int matches) {
         return matches > max_spot ? max_spot * score : matches * score;
     }
