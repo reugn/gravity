@@ -7,7 +7,7 @@ import reug.gravity.matcher.MatcherFactory;
 import reug.gravity.model.MatchResult;
 import reug.gravity.model.Pattern;
 import reug.gravity.traits.SlidingTargetShift;
-import reug.gravity.util.SlidingReader;
+import reug.gravity.reader.SlidingReader;
 
 import java.io.IOException;
 import java.io.InputStream;
