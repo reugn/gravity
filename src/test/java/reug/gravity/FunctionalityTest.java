@@ -11,6 +11,7 @@ import reug.gravity.matcher.multi.ConcurrentMultiMatcher;
 import reug.gravity.matcher.multi.SpecifiedMatcher;
 import reug.gravity.matcher.multi.TrieMatcher;
 import reug.gravity.model.Pattern;
+import reug.gravity.util.Filters;
 import reug.gravity.util.Patterns;
 import reug.gravity.util.Utils;
 
@@ -74,7 +75,7 @@ public class FunctionalityTest {
     public void multiMatchFromCSV() throws Exception {
         InputStream is = Utils.readResource("/apache-license-2.0.txt");
         InputStream patterns_is = Utils.readResource("/patterns.csv");
-        List<Pattern> patterns = Patterns.fromCSV(patterns_is, t -> t.replaceAll("[^\\p{L}\\d\\s_]", ""));
+        List<Pattern> patterns = Patterns.fromCSV(patterns_is, Filters::specialChars);
 
         CasualMatcher cm = new ConcurrentMultiMatcher(ContainsMatcher::new, 32);
         int res = cm.match(patterns, is).get().get();
