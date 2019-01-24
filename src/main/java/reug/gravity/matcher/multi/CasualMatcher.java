@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public interface MultiMatcher {
+public interface CasualMatcher {
 
     /**
      * Search for patterns in String target

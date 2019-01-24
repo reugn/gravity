@@ -7,7 +7,7 @@ import reug.gravity.matcher.MatcherFactory;
 import reug.gravity.model.MatchResult;
 import reug.gravity.model.Pattern;
 import reug.gravity.traits.SlidingTargetShift;
-import reug.gravity.util.SlidingReader;
+import reug.gravity.reader.SlidingReader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +19,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
-public class ConcurrentMultiMatcher implements MultiMatcher {
+public class ConcurrentMultiMatcher implements CasualMatcher {
 
     private MatcherFactory f;
     private int windowMagnitude;
