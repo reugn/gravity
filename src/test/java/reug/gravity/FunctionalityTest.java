@@ -5,6 +5,7 @@ import reug.gravity.extractor.TextExtractor;
 import reug.gravity.extractor.TikaTextExtractor;
 import reug.gravity.matcher.BMHMatcher;
 import reug.gravity.matcher.ContainsMatcher;
+import reug.gravity.matcher.LevenshteinMatcher;
 import reug.gravity.matcher.Matcher;
 import reug.gravity.matcher.multi.CasualMatcher;
 import reug.gravity.matcher.multi.ConcurrentMultiMatcher;
@@ -24,7 +25,7 @@ import static org.junit.Assert.assertEquals;
 public class FunctionalityTest {
 
     @Test
-    public void readAndContainsMatcherTxtFile() throws Exception {
+    public void ContainsMatcherTxtFile() throws Exception {
         InputStream is = Utils.readResource("/apache-license-2.0.txt");
         Pattern pattern = new Pattern("within third-party archives", 1);
 
@@ -34,13 +35,23 @@ public class FunctionalityTest {
     }
 
     @Test
-    public void readAndBMHMatcherTxtFile() throws Exception {
+    public void BMHMatcherTxtFile() throws Exception {
         InputStream is = Utils.readResource("/apache-license-2.0.txt");
         Pattern pattern = new Pattern("within third-party archives", 1);
 
         Matcher m = new BMHMatcher();
         int res = m.match(pattern, is, 2);
         assertEquals(1, res);
+    }
+
+    @Test
+    public void LevenshteinMatcherTxtFile() throws Exception {
+        InputStream is = Utils.readResource("/apache-license-2.0.txt");
+        Pattern pattern = new Pattern("file", 1);
+
+        Matcher m = new LevenshteinMatcher(1);
+        int res = m.match(pattern, is, 2);
+        assertEquals(12, res);
     }
 
     @Test
