@@ -1,17 +1,20 @@
 package reug.gravity.matcher;
 
 import reug.gravity.model.Pattern;
-import reug.gravity.traits.SlidingTargetShift;
 import reug.gravity.reader.SlidingReader;
+import reug.gravity.traits.SlidingTargetShift;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.Optional;
 
 public abstract class BaseMatcher implements Matcher {
 
     @Override
     public int match(Pattern pattern, String target) {
+        Objects.requireNonNull(pattern);
+        Objects.requireNonNull(target);
         return doMatch(pattern.getSearch(), pattern.transform(target));
     }
 
