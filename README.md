@@ -1,14 +1,14 @@
 ## Gravity
 [ ![Download](https://api.bintray.com/packages/reug/maven/gravity/images/download.svg) ](https://bintray.com/reug/maven/gravity/_latestVersion)
 
-Gravity is a Java data matching library with rich multi-pattern and simple string match interfaces.
-Provides ability to match against InputStream without loading the whole target into memory.
+Gravity is a Java string matching library with rich multi-pattern and simple string match interfaces.
+It provides the ability to match against InputStream without loading the whole target into memory.
 
 Wraps [Apache Tika](https://github.com/apache/tika) for detecting and extracting metadata and structured text content from various document formats.
 
 ### Getting Started
 
-Add  Maven/Gradle repository
+Add Maven/Gradle repository
 ```
 https://dl.bintray.com/reug/maven
 ```
@@ -47,3 +47,6 @@ InputStream is = Utils.readResource("/apache-license-2.0.txt");
 int res = sm.match(is).get().get();
 assertEquals(18, res);
 ```
+
+### License
+Licensed under the Apache 2.0 License.
