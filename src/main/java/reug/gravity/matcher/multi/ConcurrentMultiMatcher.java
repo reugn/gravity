@@ -64,7 +64,7 @@ public class ConcurrentMultiMatcher implements CasualMatcher {
                     List<List<MatchResult>> res = new ArrayList<>();
                     try (SlidingReader reader = new SlidingReader(is, w_size * windowMagnitude)) {
                         Optional<String> window = reader.read();
-                        while (window != Optional.<String>empty()) {
+                        while (window.isPresent()) {
                             res.add(invokeAll(patterns, window.get(), SlidingTargetShift.doShift));
                             window = reader.read();
                         }
