@@ -1,15 +1,18 @@
 plugins {
     id 'java'
+    id 'maven'
+    id 'maven-publish'
     id 'com.jfrog.bintray' version '0.4.1'
-    id "me.champeau.gradle.jmh" version "0.4.7"
+    id "me.champeau.gradle.jmh" version "0.5.0"
 }
 
-group 'reug'
+group 'com.github.reugn'
 version '0.4.2'
 
 sourceCompatibility = 1.8
 
 repositories {
+    jcenter()
     mavenCentral()
 }
 
@@ -20,6 +23,7 @@ bintray {
     user = properties.getProperty("user")
     key = properties.getProperty("password")
     configurations = ['archives']
+    publish = true
     pkg {
         repo = 'maven'
         name = 'gravity'
@@ -28,17 +32,17 @@ bintray {
 }
 
 ext {
-    tikaVersion = '1.21'
-    slf4jVersion = '1.7.26'
+    tikaVersion = '1.24.1'
+    slf4jVersion = '1.7.30'
 }
 
 dependencies {
-    compile "org.apache.tika:tika-core:${tikaVersion}"
-    compile "org.apache.tika:tika-parsers:${tikaVersion}"
-    compile "com.google.guava:guava:28.0-jre"
-    compile "org.slf4j:slf4j-api:${slf4jVersion}"
-    testCompile "junit:junit:4.12"
-    testCompile "org.slf4j:slf4j-log4j12:${slf4jVersion}"
+    implementation "org.apache.tika:tika-core:${tikaVersion}"
+    implementation "org.apache.tika:tika-parsers:${tikaVersion}"
+    implementation "com.google.guava:guava:29.0-jre"
+    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    testImplementation "junit:junit:4.13"
+    testImplementation "org.slf4j:slf4j-log4j12:${slf4jVersion}"
 }
 
 sourceSets {
@@ -52,12 +56,12 @@ test {
     useJUnit()
     maxHeapSize = '128M'
     filter {
-        includeTestsMatching "reug.gravity.*"
+        includeTestsMatching "com.github.reugn.gravity.*"
     }
 }
 
 jmh {
-    include = ['reug\\.gravity\\.bench\\.MatcherBenchmark.*']
+    include = ['com\\.github\\.reugn\\.gravity\\.bench\\.MatcherBenchmark.*']
     iterations = 1
     fork = 0
     threads = 1
