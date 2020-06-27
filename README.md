@@ -1,23 +1,27 @@
-## Gravity
+# Gravity
+[![Build Status](https://travis-ci.com/reugn/gravity.svg?branch=master)](https://travis-ci.com/reugn/gravity)
 [ ![Download](https://api.bintray.com/packages/reug/maven/gravity/images/download.svg) ](https://bintray.com/reug/maven/gravity/_latestVersion)
 
-Gravity is a Java string matching library with rich multi-pattern and simple string match interfaces.
-It provides the ability to match against InputStream without loading the whole target into memory.
+`Gravity` is a Java string matching library with a rich multi-pattern and simple string match interfaces.
+It provides an ability to match against InputStream without loading the whole target into the memory.
 
-Wraps [Apache Tika](https://github.com/apache/tika) for detecting and extracting metadata and structured text content from various document formats.
+`Gravity` wraps [Apache Tika](https://github.com/apache/tika) to detect and extract metadata and structured text content from various document formats.
 
-### Getting Started
-
-Add Maven/Gradle repository
+## Getting Started
+Add Maven/Gradle repository:
 ```
 https://dl.bintray.com/reug/maven
 ```
-Gradle dependency
+Gradle dependency:
 ```
-compile(group: 'reug', name: 'gravity', version: '<version>')
+implementation 'com.github.reugn:gravity:<version>'
 ```
-### Usage examples
-Single pattern matcher
+
+## Installation
+* Install [TikaOCR](https://cwiki.apache.org/confluence/display/TIKA/TikaOCR) to search text inside an image.
+
+## Usage examples
+Single pattern matcher:
 ```java
 InputStream is = Utils.readResource("/apache-license-2.0.txt");
 Pattern pattern = new Pattern("within third-party archives", 1);
@@ -26,7 +30,8 @@ Matcher m = new BMHMatcher();
 int res = m.match(pattern, is, 2);
 assertEquals(1, res)
 ```
-Use ad hoc matcher for multiple patterns
+
+Use ad hoc matcher for multiple patterns:
 ```java
 InputStream is = Utils.readResource("/apache-license-2.0.txt");
 List<Pattern> patterns = new ArrayList<>();
@@ -38,7 +43,8 @@ MultiMatcher m = new ConcurrentMultiMatcher(ContainsMatcher::new, 32);
 int res = m.match(patterns, is).get().get();
 assertEquals(17, res);
 ```
-Load patterns from CSV file and use Trie matcher
+
+Load patterns from a CSV file and use Trie matcher:
 ```java
 InputStream patterns_is = Utils.readResource("/patterns.csv");
 List<Pattern> patterns = Patterns.fromCSV(patterns_is, Filters::specialChars);
@@ -48,5 +54,5 @@ int res = sm.match(is).get().get();
 assertEquals(18, res);
 ```
 
-### License
+## License
 Licensed under the Apache 2.0 License.
