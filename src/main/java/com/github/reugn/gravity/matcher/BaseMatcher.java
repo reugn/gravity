@@ -32,7 +32,7 @@ public abstract class BaseMatcher implements Matcher {
         int rt = NOT_FOUND;
         try (SlidingReader reader = new SlidingReader(is, pattern.getSearch().length() * windowMagnitude)) {
             Optional<String> window = reader.read();
-            while (window != Optional.<String>empty()) {
+            while (window.isPresent()) {
                 rt += match(pattern, SlidingTargetShift.doShift.shiftTarget(pattern, window.get()));
                 window = reader.read();
             }
