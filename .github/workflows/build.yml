@@ -18,6 +18,9 @@ jobs:
         with:
           java-version: 1.8
 
+      - name: Install Tesseract
+        run: sudo apt-get install tesseract-ocr
+
       - name: Create local.properties
         run: touch local.properties
 
