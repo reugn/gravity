@@ -1,27 +1,22 @@
 # Gravity
-[![Build Status](https://travis-ci.com/reugn/gravity.svg?branch=master)](https://travis-ci.com/reugn/gravity)
-[ ![Download](https://api.bintray.com/packages/reug/maven/gravity/images/download.svg) ](https://bintray.com/reug/maven/gravity/_latestVersion)
+[![Build](https://github.com/reugn/gravity/actions/workflows/build.yml/badge.svg)](https://github.com/reugn/gravity/actions/workflows/build.yml)
 
 `Gravity` is a Java string matching library with a rich multi-pattern and simple string match interfaces.
-It provides an ability to match against InputStream without loading the whole target into the memory.
+It provides an ability to match against an InputStream without loading the whole target into the memory.
 
 `Gravity` wraps [Apache Tika](https://github.com/apache/tika) to detect and extract metadata and structured text content from various document formats.
 
 ## Getting Started
-Add Maven/Gradle repository:
-```
-https://dl.bintray.com/reug/maven
-```
-Gradle dependency:
-```
-implementation 'com.github.reugn:gravity:<version>'
+### Build from source
+```sh
+./gradlew clean build
 ```
 
 ## Installation
 * Install [TikaOCR](https://cwiki.apache.org/confluence/display/TIKA/TikaOCR) to search text inside an image.
 
 ## Usage examples
-Single pattern matcher:
+A single pattern matcher:
 ```java
 InputStream is = Utils.readResource("/apache-license-2.0.txt");
 Pattern pattern = new Pattern("within third-party archives", 1);
@@ -31,7 +26,7 @@ int res = m.match(pattern, is, 2);
 assertEquals(1, res)
 ```
 
-Use ad hoc matcher for multiple patterns:
+Use an ad hoc matcher for multiple patterns:
 ```java
 InputStream is = Utils.readResource("/apache-license-2.0.txt");
 List<Pattern> patterns = new ArrayList<>();
@@ -44,7 +39,7 @@ int res = m.match(patterns, is).get().get();
 assertEquals(17, res);
 ```
 
-Load patterns from a CSV file and use Trie matcher:
+Load patterns from a CSV file and use the Trie matcher:
 ```java
 InputStream patterns_is = Utils.readResource("/patterns.csv");
 List<Pattern> patterns = Patterns.fromCSV(patterns_is, Filters::specialChars);
