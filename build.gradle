@@ -2,46 +2,50 @@ plugins {
     id 'java'
     id 'maven'
     id 'maven-publish'
-    id 'com.jfrog.bintray' version '0.4.1'
     id "me.champeau.gradle.jmh" version "0.5.0"
 }
 
-group 'com.github.reugn'
-version '0.5.0'
+group 'io.github.reugn'
+version '0.6.0'
 
 sourceCompatibility = 1.8
 
 repositories {
-    jcenter()
     mavenCentral()
 }
 
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
-bintray {
-    user = properties.getProperty("user")
-    key = properties.getProperty("password")
-    configurations = ['archives']
-    publish = true
-    pkg {
-        repo = 'maven'
-        name = 'gravity'
-        licenses = ['Apache-2.0']
+publishing {
+    repositories {
+        maven {
+            name = "GithubPackages"
+            url = uri("https://maven.pkg.github.com/reugn/gravity")
+            credentials {
+                username = properties.getProperty("user") ?: System.getenv("GITHUB_ACTOR")
+                password = properties.getProperty("password") ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        register("jar", MavenPublication) {
+            from(components["java"])
+        }
     }
 }
 
 ext {
-    tikaVersion = '1.24.1'
+    tikaVersion = '1.27'
     slf4jVersion = '1.7.30'
 }
 
 dependencies {
     implementation "org.apache.tika:tika-core:${tikaVersion}"
     implementation "org.apache.tika:tika-parsers:${tikaVersion}"
-    implementation "com.google.guava:guava:29.0-jre"
+    implementation "com.google.guava:guava:31.0.1-jre"
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
-    testImplementation "junit:junit:4.13"
+    testImplementation "junit:junit:4.13.2"
     testImplementation "org.slf4j:slf4j-log4j12:${slf4jVersion}"
 }
 
@@ -56,12 +60,12 @@ test {
     useJUnit()
     maxHeapSize = '128M'
     filter {
-        includeTestsMatching "com.github.reugn.gravity.*"
+        includeTestsMatching "io.github.reugn.gravity.*"
     }
 }
 
 jmh {
-    include = ['com\\.github\\.reugn\\.gravity\\.bench\\.MatcherBenchmark.*']
+    include = ['io\\.github\\.reugn\\.gravity\\.bench\\.MatcherBenchmark.*']
     iterations = 1
     fork = 0
     threads = 1
