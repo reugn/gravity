@@ -12,6 +12,9 @@ It provides an ability to match against an InputStream without loading the whole
 ./gradlew clean build
 ```
 
+### Install as a dependency
+Read on [how to install](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#installing-a-package) the `gravity` package from GitHub Packages.
+
 ## Installation
 * Install [TikaOCR](https://cwiki.apache.org/confluence/display/TIKA/TikaOCR) to search text inside an image.
 
